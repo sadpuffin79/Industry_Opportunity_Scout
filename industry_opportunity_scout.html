@@ -196,12 +196,12 @@
 const { useState } = React;
 
 const PLATFORMS = [
-  { id: "inpart",        label: "In-Part" },
-  { id: "halo",          label: "Halo Innovation" },
-  { id: "yet2",          label: "yet2" },
-  { id: "ninesigma",     label: "NineSigma" },
-  { id: "wazoku",        label: "Wazoku / InnoCentive" },
-  { id: "openinnovation",label: "Open innovation portals" },
+  { id: "inpart",        label: "In-Part",               activeUrl: "https://in-part.com/industry-needs" },
+  { id: "halo",          label: "Halo Innovation",        activeUrl: "https://haloinnovation.com/challenges" },
+  { id: "yet2",          label: "yet2",                   activeUrl: "https://yet2.com/tech-needs" },
+  { id: "ninesigma",     label: "NineSigma",              activeUrl: "https://ninesigma.com/challenges" },
+  { id: "wazoku",        label: "Wazoku / InnoCentive",   activeUrl: "https://app.wazoku.com/challenges" },
+  { id: "openinnovation",label: "Open innovation portals",activeUrl: null },
 ];
 
 const BADGE_CLASS = {
@@ -219,31 +219,39 @@ const BADGE_LABEL = {
   "other":             "Other",
 };
 
-const SYSTEM_PROMPT = `You are a technology transfer intelligence analyst working for a university. Find "industry asks" — posts where companies have published a technology need, research challenge, or collaboration request that a university research group could respond to.
-
-You are NOT looking for universities advertising technologies. You are looking for INDUSTRY posting what they NEED.
-
-Search for:
-- Industry technology needs on open innovation platforms
-- Companies seeking external research partners or contract research
-- Industry requests to license-in technology from universities or research institutes
-- Corporate innovation challenges seeking novel solutions
-- Industry collaboration briefs on technology transfer platforms
-
-Return ONLY a valid JSON array — no preamble, no markdown fences, no explanation:
-[{
-  "title": "title of the ask",
-  "company": "company posting the need",
-  "platform": "platform found on",
-  "description": "2-3 sentences on what they need",
-  "url": "URL or null",
-  "techArea": "technology area",
-  "type": "contract research" | "licensing in" | "collaboration" | "challenge / prize" | "other",
-  "deadline": "closing date if mentioned, else null",
-  "date": "date posted or null"
-}]
-
-Return only real, verifiable industry asks. Do not invent entries.`;
+function buildPrompt(platStr, themeStr, platUrls) {
+  const today = new Date().toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" });
+  return "You are a technology transfer intelligence analyst working for a university. Today\'s date is " + today + ".\n\n"
+    + "Find ACTIVE \"industry asks\" — posts where companies have published a technology need, research challenge, or collaboration request that a university research group could respond to RIGHT NOW.\n\n"
+    + "You are NOT looking for universities advertising technologies. You are looking for INDUSTRY posting what they NEED.\n\n"
+    + "CRITICAL — ACTIVE OPPORTUNITIES ONLY:\n"
+    + "- Only return opportunities that are currently open and accepting responses as of " + today + "\n"
+    + "- Exclude anything whose deadline has already passed\n"
+    + "- Exclude anything posted more than 12 months ago unless it explicitly states it is still active\n"
+    + "- If you cannot confirm an opportunity is still active, omit it\n"
+    + "- Prefer results from the last 6 months\n\n"
+    + "Platform-specific active listing pages — go to these URLs directly:\n"
+    + platUrls + "\n\n"
+    + "Search strategy:\n"
+    + "1. Navigate directly to the active listing pages above — do not search generically\n"
+    + "2. Look for technology needs matching the themes: " + themeStr + "\n"
+    + "3. Confirm each result is still open before including it\n"
+    + "4. Do NOT return case studies, past projects, news articles, or closed challenges\n\n"
+    + "Return ONLY a valid JSON array — no preamble, no markdown fences, no explanation:\n"
+    + "[{\n"
+    + "  \"title\": \"title of the ask\",\n"
+    + "  \"company\": \"company posting the need\",\n"
+    + "  \"platform\": \"platform found on\",\n"
+    + "  \"description\": \"2-3 sentences on what they need\",\n"
+    + "  \"url\": \"direct URL to the active listing\",\n"
+    + "  \"techArea\": \"technology area\",\n"
+    + "  \"type\": \"contract research | licensing in | collaboration | challenge / prize | other\",\n"
+    + "  \"deadline\": \"closing date if stated, else null\",\n"
+    + "  \"date\": \"date posted if visible, else null\",\n"
+    + "  \"activeStatus\": \"confirmed open | assumed open | unknown\"\n"
+    + "}]\n\n"
+    + "Return only real, verifiable, currently active industry asks. Do not invent entries.";
+}
 
 function App() {
   const [apiKey,    setApiKey]    = useState("");
@@ -270,14 +278,21 @@ function App() {
     const logs = [];
     const addLog = msg => { logs.push({ t: new Date().toLocaleTimeString("en-GB"), msg }); setLog([...logs]); };
 
-    const platStr  = PLATFORMS.filter(p => platforms.includes(p.id)).map(p => p.label).join(", ");
-    const themeStr = themes.join(", ");
+    const selPlats  = PLATFORMS.filter(p => platforms.includes(p.id));
+    const platStr   = selPlats.map(p => p.label).join(", ");
+    const themeStr  = themes.join(", ");
+    const platUrls  = selPlats
+      .filter(p => p.activeUrl)
+      .map(p => "- " + p.label + ": " + p.activeUrl)
+      .join("\n");
 
     addLog("Starting search agent...");
     addLog("Platforms: " + platStr);
     addLog("Themes: " + themeStr);
+    addLog("Searching active listings only...");
 
-    const userMessage = `Search ${platStr} for current industry asks — companies posting technology needs or research collaboration requests — related to: ${themeStr}. Return as a JSON array only.`;
+    const today = new Date().toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" });
+    const userMessage = "Search the active listings on " + platStr + " for current open industry asks related to: " + themeStr + ". Today is " + today + ". Return only active, open opportunities as a JSON array.";
 
     try {
       addLog("Calling OpenAI with web search...");
@@ -291,18 +306,15 @@ function App() {
         body: JSON.stringify({
           model: "gpt-4o",
           tools: [{ type: "web_search_preview" }],
-          instructions: SYSTEM_PROMPT + "\n\nPlatforms to search: " + platStr + "\nTechnology themes: " + themeStr,
+          instructions: buildPrompt(platStr, themeStr, platUrls),
           input: userMessage,
         })
       });
 
       const data = await resp.json();
-
       if (data.error) throw new Error(data.error.message);
-
       addLog("Response received. Parsing...");
 
-      // Extract text from OpenAI Responses API output array
       const text = (data.output || [])
         .filter(b => b.type === "message")
         .flatMap(b => b.content || [])
@@ -317,7 +329,7 @@ function App() {
       if (m) {
         try {
           opps = JSON.parse(m[0]);
-          addLog(`Parsed ${opps.length} industry ask${opps.length === 1 ? "" : "s"}.`);
+          addLog("Parsed " + opps.length + " industry ask" + (opps.length === 1 ? "" : "s") + ".");
         } catch {
           addLog("JSON parse error — raw response available.");
           setError("Could not parse structured results. See raw output.");
@@ -339,8 +351,8 @@ function App() {
 
   const exportCSV = () => {
     if (!results?.length) return;
-    const cols = ["title","company","platform","type","techArea","description","url","deadline","date"];
-    const rows = results.map(r => cols.map(k => `"${(r[k]||"").toString().replace(/"/g,'""')}"`).join(","));
+    const cols = ["title","company","platform","type","techArea","description","url","deadline","date","activeStatus"];
+    const rows = results.map(r => cols.map(k => "\"" + (r[k]||"").toString().replace(/"/g,'\\""\') + "\"").join(","));
     const a = document.createElement("a");
     a.href = "data:text/csv;charset=utf-8," + encodeURIComponent([cols.join(","), ...rows].join("\n"));
     a.download = "industry-asks.csv";
@@ -350,17 +362,23 @@ function App() {
   const badgeClass = r => BADGE_CLASS[(r.type||"").toLowerCase()] || "badge-other";
   const badgeLabel = r => BADGE_LABEL[(r.type||"").toLowerCase()] || "Other";
 
+  const STATUS_STYLE = {
+    "confirmed open": { color: "#1a7a4a", bg: "#e6f9f0" },
+    "assumed open":   { color: "#a06500", bg: "#fff8e6" },
+    "unknown":        { color: "#888",    bg: "#f4f3ef" },
+  };
+  const statusStyle = r => STATUS_STYLE[(r.activeStatus||"").toLowerCase()] || STATUS_STYLE["unknown"];
+
   const e = React.createElement;
 
   return e("div", null,
     e("header", null,
       e("h1", null, "Industry Ask Scout"),
-      e("p",  null, "Find technology needs and research requests posted by industry — for your university TTO.")
+      e("p",  null, "Find active technology needs and research requests posted by industry — for your university TTO.")
     ),
 
     e("div", { className: "layout" },
 
-      // ── Left panel ──
       e("div", { className: "panel" },
 
         e("div", { className: "api-row" },
@@ -375,7 +393,7 @@ function App() {
           e("span", { className: "api-note" },
             "Get a key at ",
             e("a", { href: "https://platform.openai.com/api-keys", target: "_blank", rel: "noopener" }, "platform.openai.com"),
-            ". Not stored anywhere."
+            ". Not stored."
           )
         ),
 
@@ -425,14 +443,13 @@ function App() {
         },
           running
             ? e(React.Fragment, null, e("span", { className: "spin" }, "↻"), " Searching…")
-            : "🔍 Find industry asks"
+            : "🔍 Find active asks"
         ),
 
         results?.length > 0 &&
           e("button", { className: "export-btn", onClick: exportCSV }, "↓ Export CSV")
       ),
 
-      // ── Right: results ──
       e("div", { className: "results-panel" },
 
         log.length > 0 && e("div", { className: "log-box" },
@@ -462,16 +479,24 @@ function App() {
         ),
 
         results?.length === 0 && e("div", { className: "empty-state" },
-          e("p", null, "No results found. Try broader themes or different platforms.")
+          e("p", null, "No active results found. Try broader themes or different platforms.")
         ),
 
         results?.length > 0 && e(React.Fragment, null,
           e("div", { className: "results-header" },
-            results.length + " industry ask" + (results.length === 1 ? "" : "s") + " found"
+            results.length + " active industry ask" + (results.length === 1 ? "" : "s") + " found"
           ),
           results.map((r, i) => e("div", { key: i, className: "result-card" },
             e("div", { className: "card-top" },
-              e("span", { className: "badge " + badgeClass(r) }, badgeLabel(r)),
+              e("div", { style: { display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" } },
+                e("span", { className: "badge " + badgeClass(r) }, badgeLabel(r)),
+                r.activeStatus && e("span", {
+                  style: {
+                    fontSize: 11, fontWeight: 500, padding: "2px 8px", borderRadius: 20,
+                    background: statusStyle(r).bg, color: statusStyle(r).color
+                  }
+                }, r.activeStatus)
+              ),
               e("div", { style: { display: "flex", gap: 10, alignItems: "center" } },
                 r.deadline && e("span", { className: "deadline" }, "⏱ " + r.deadline),
                 r.date     && e("span", { className: "date-lbl" }, r.date)
