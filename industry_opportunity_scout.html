@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Industry Ask Scout — Claude.ai version</title>
+<title>Industry Ask Scout</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <style>
@@ -17,21 +17,11 @@
     padding: 32px 24px;
   }
 
-  #root { max-width: 960px; margin: 0 auto; }
+  #root { max-width: 980px; margin: 0 auto; }
 
-  header {
-    margin-bottom: 28px;
-  }
-  header h1 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #111;
-    margin-bottom: 4px;
-  }
-  header p {
-    font-size: 13px;
-    color: #666;
-  }
+  header { margin-bottom: 24px; }
+  header h1 { font-size: 20px; font-weight: 600; color: #111; margin-bottom: 4px; }
+  header p  { font-size: 13px; color: #666; }
 
   .layout {
     display: grid;
@@ -72,237 +62,132 @@
     margin: 0 4px 4px 0;
   }
   .tag button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #999;
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
+    background: none; border: none; cursor: pointer;
+    color: #999; font-size: 14px; line-height: 1; padding: 0;
   }
   .tag button:hover { color: #333; }
 
-  .add-row {
-    display: flex;
-    gap: 6px;
-    margin-top: 4px;
-  }
+  .add-row { display: flex; gap: 6px; margin-top: 4px; }
   .add-row input {
-    flex: 1;
-    padding: 6px 10px;
-    border: 1px solid #e0ddd5;
-    border-radius: 8px;
-    font-size: 12px;
-    background: #faf9f7;
-    outline: none;
-    color: #111;
+    flex: 1; padding: 6px 10px;
+    border: 1px solid #e0ddd5; border-radius: 8px;
+    font-size: 12px; background: #faf9f7; outline: none; color: #111;
   }
   .add-row input:focus { border-color: #aaa; }
   .add-row button {
-    padding: 6px 10px;
-    border: 1px solid #e0ddd5;
-    border-radius: 8px;
-    background: #faf9f7;
-    cursor: pointer;
-    font-size: 16px;
-    color: #555;
+    padding: 6px 10px; border: 1px solid #e0ddd5;
+    border-radius: 8px; background: #faf9f7;
+    cursor: pointer; font-size: 16px; color: #555;
   }
   .add-row button:hover { background: #f0ede6; }
 
   .divider { height: 1px; background: #f0ede6; }
 
   .plat-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 5px 0;
-    cursor: pointer;
-    font-size: 13px;
-    color: #333;
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 0; cursor: pointer; font-size: 13px; color: #333;
   }
   .plat-label input { accent-color: #555; width: 14px; height: 14px; }
 
+  .api-row { display: flex; flex-direction: column; gap: 6px; }
+  .api-row input {
+    width: 100%; padding: 7px 10px;
+    border: 1px solid #e0ddd5; border-radius: 8px;
+    font-size: 12px; background: #faf9f7; color: #111; outline: none;
+    font-family: monospace;
+  }
+  .api-row input:focus { border-color: #888; }
+  .api-note { font-size: 11px; color: #aaa; }
+  .api-note a { color: #888; }
+
   .run-btn {
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    background: #1a1a1a;
-    color: #fff;
-    border: none;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+    width: 100%; padding: 10px; border-radius: 8px;
+    background: #1a1a1a; color: #fff; border: none;
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
   }
   .run-btn:disabled { opacity: 0.45; cursor: not-allowed; }
   .run-btn:not(:disabled):hover { background: #333; }
 
   .export-btn {
-    width: 100%;
-    padding: 8px;
-    border-radius: 8px;
-    background: none;
-    border: 1px solid #e0ddd5;
-    font-size: 12px;
-    color: #666;
-    cursor: pointer;
+    width: 100%; padding: 8px; border-radius: 8px;
+    background: none; border: 1px solid #e0ddd5;
+    font-size: 12px; color: #666; cursor: pointer;
   }
   .export-btn:hover { background: #f4f3ef; }
 
-  .results-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+  .results-panel { display: flex; flex-direction: column; gap: 12px; }
 
   .log-box {
-    background: #fff;
-    border: 1px solid #e5e3dc;
-    border-radius: 10px;
-    padding: 12px 16px;
-    font-size: 11px;
-    font-family: 'Courier New', monospace;
+    background: #fff; border: 1px solid #e5e3dc;
+    border-radius: 10px; padding: 12px 16px;
   }
   .log-toggle {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 12px;
-    color: #888;
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 0;
+    background: none; border: none; cursor: pointer;
+    font-size: 12px; color: #888; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 4px; padding: 0;
   }
   .log-line { display: flex; gap: 10px; padding: 1px 0; }
-  .log-time { color: #bbb; flex-shrink: 0; }
-  .log-msg { color: #666; }
+  .log-time { font-family: monospace; font-size: 11px; color: #bbb; flex-shrink: 0; }
+  .log-msg  { font-family: monospace; font-size: 11px; color: #666; }
 
   .error-box {
-    background: #fff5f5;
-    border: 1px solid #fcd4d4;
-    border-radius: 10px;
-    padding: 12px 16px;
-    font-size: 13px;
-    color: #c0392b;
+    background: #fff5f5; border: 1px solid #fcd4d4;
+    border-radius: 10px; padding: 12px 16px;
+    font-size: 13px; color: #c0392b;
   }
   .error-box details { margin-top: 8px; }
   .error-box summary { cursor: pointer; font-size: 12px; }
   .error-box pre {
-    font-size: 11px;
-    margin-top: 6px;
-    white-space: pre-wrap;
-    word-break: break-word;
-    max-height: 200px;
-    overflow: auto;
-    color: #555;
+    font-size: 11px; margin-top: 6px; white-space: pre-wrap;
+    word-break: break-word; max-height: 200px; overflow: auto; color: #555;
   }
 
   .empty-state {
-    background: #fff;
-    border: 1px solid #e5e3dc;
-    border-radius: 12px;
-    padding: 48px 24px;
-    text-align: center;
-    color: #bbb;
+    background: #fff; border: 1px solid #e5e3dc;
+    border-radius: 12px; padding: 48px 24px;
+    text-align: center; color: #bbb;
   }
   .empty-state .icon { font-size: 28px; margin-bottom: 10px; }
   .empty-state p { font-size: 13px; color: #999; }
   .empty-state p.sub { font-size: 12px; color: #bbb; margin-top: 4px; }
 
-  .results-header {
-    font-size: 12px;
-    color: #999;
-    padding: 0 2px;
-  }
+  .results-header { font-size: 12px; color: #999; padding: 0 2px; }
 
   .result-card {
-    background: #fff;
-    border: 1px solid #e5e3dc;
-    border-radius: 12px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    background: #fff; border: 1px solid #e5e3dc;
+    border-radius: 12px; padding: 16px;
+    display: flex; flex-direction: column; gap: 8px;
   }
   .result-card:hover { border-color: #ccc; }
 
   .card-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 8px;
-    flex-wrap: wrap;
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 8px; flex-wrap: wrap;
   }
 
   .badge {
-    display: inline-block;
-    padding: 2px 9px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 500;
+    display: inline-block; padding: 2px 9px;
+    border-radius: 20px; font-size: 11px; font-weight: 500;
   }
   .badge-research  { background: #e8f0fe; color: #1a56c4; }
   .badge-licensing { background: #e6f9f0; color: #1a7a4a; }
   .badge-collab    { background: #f0ecfe; color: #5b3fc4; }
   .badge-challenge { background: #fff8e6; color: #a06500; }
-  .badge-other     { background: #f4f3ef; color: #666; }
+  .badge-other     { background: #f4f3ef; color: #666;    }
 
-  .deadline {
-    font-size: 11px;
-    color: #d97706;
-    display: flex;
-    align-items: center;
-    gap: 3px;
-  }
-  .date-label { font-size: 11px; color: #bbb; }
-
-  .card-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: #111;
-    line-height: 1.4;
-  }
-
-  .card-meta {
-    font-size: 12px;
-    color: #777;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .card-meta .sep { color: #ddd; }
-
-  .card-desc {
-    font-size: 12px;
-    color: #666;
-    line-height: 1.6;
-  }
-
-  .card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 2px;
-  }
-  .tech-tag { font-size: 11px; color: #aaa; }
-  .view-link {
-    font-size: 11px;
-    color: #1a56c4;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 2px;
-  }
+  .deadline  { font-size: 11px; color: #d97706; }
+  .date-lbl  { font-size: 11px; color: #bbb; }
+  .card-title { font-size: 14px; font-weight: 500; color: #111; line-height: 1.4; }
+  .card-meta  { font-size: 12px; color: #777; }
+  .card-desc  { font-size: 12px; color: #666; line-height: 1.6; }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
+  .tech-tag  { font-size: 11px; color: #aaa; }
+  .view-link { font-size: 11px; color: #1a56c4; text-decoration: none; }
   .view-link:hover { text-decoration: underline; }
 
   @keyframes spin { to { transform: rotate(360deg); } }
   .spin { display: inline-block; animation: spin 1s linear infinite; }
-
 </style>
 </head>
 <body>
@@ -315,11 +200,11 @@ const PLATFORMS = [
   { id: "halo",          label: "Halo Innovation" },
   { id: "yet2",          label: "yet2" },
   { id: "ninesigma",     label: "NineSigma" },
-  { id: "innocentive",   label: "Wazoku / InnoCentive" },
+  { id: "wazoku",        label: "Wazoku / InnoCentive" },
   { id: "openinnovation",label: "Open innovation portals" },
 ];
 
-const BADGE = {
+const BADGE_CLASS = {
   "contract research": "badge-research",
   "licensing in":      "badge-licensing",
   "collaboration":     "badge-collab",
@@ -334,16 +219,43 @@ const BADGE_LABEL = {
   "other":             "Other",
 };
 
+const SYSTEM_PROMPT = `You are a technology transfer intelligence analyst working for a university. Find "industry asks" — posts where companies have published a technology need, research challenge, or collaboration request that a university research group could respond to.
+
+You are NOT looking for universities advertising technologies. You are looking for INDUSTRY posting what they NEED.
+
+Search for:
+- Industry technology needs on open innovation platforms
+- Companies seeking external research partners or contract research
+- Industry requests to license-in technology from universities or research institutes
+- Corporate innovation challenges seeking novel solutions
+- Industry collaboration briefs on technology transfer platforms
+
+Return ONLY a valid JSON array — no preamble, no markdown fences, no explanation:
+[{
+  "title": "title of the ask",
+  "company": "company posting the need",
+  "platform": "platform found on",
+  "description": "2-3 sentences on what they need",
+  "url": "URL or null",
+  "techArea": "technology area",
+  "type": "contract research" | "licensing in" | "collaboration" | "challenge / prize" | "other",
+  "deadline": "closing date if mentioned, else null",
+  "date": "date posted or null"
+}]
+
+Return only real, verifiable industry asks. Do not invent entries.`;
+
 function App() {
-  const [themes, setThemes]       = useState(["materials science", "medical devices", "AI / machine learning"]);
-  const [newTheme, setNewTheme]   = useState("");
+  const [apiKey,    setApiKey]    = useState("");
+  const [themes,    setThemes]    = useState(["materials science", "medical devices", "AI / machine learning"]);
+  const [newTheme,  setNewTheme]  = useState("");
   const [platforms, setPlatforms] = useState(["inpart", "halo", "yet2", "ninesigma"]);
-  const [running, setRunning]     = useState(false);
-  const [results, setResults]     = useState(null);
-  const [log, setLog]             = useState([]);
-  const [error, setError]         = useState(null);
-  const [raw, setRaw]             = useState(null);
-  const [showLog, setShowLog]     = useState(true);
+  const [running,   setRunning]   = useState(false);
+  const [results,   setResults]   = useState(null);
+  const [log,       setLog]       = useState([]);
+  const [showLog,   setShowLog]   = useState(true);
+  const [error,     setError]     = useState(null);
+  const [raw,       setRaw]       = useState(null);
 
   const addTheme = () => {
     const t = newTheme.trim();
@@ -351,239 +263,233 @@ function App() {
   };
 
   const runSearch = async () => {
+    if (!apiKey.trim()) { setError("Please enter your OpenAI API key."); return; }
+
     setRunning(true); setResults(null); setError(null); setRaw(null); setShowLog(true);
 
     const logs = [];
     const addLog = msg => { logs.push({ t: new Date().toLocaleTimeString("en-GB"), msg }); setLog([...logs]); };
 
-    const selPlatforms = PLATFORMS.filter(p => platforms.includes(p.id)).map(p => p.label).join(", ");
-    const themesStr = themes.join(", ");
+    const platStr  = PLATFORMS.filter(p => platforms.includes(p.id)).map(p => p.label).join(", ");
+    const themeStr = themes.join(", ");
 
-    addLog("Search agent starting...");
-    addLog("Platforms: " + selPlatforms);
-    addLog("Themes: " + themesStr);
+    addLog("Starting search agent...");
+    addLog("Platforms: " + platStr);
+    addLog("Themes: " + themeStr);
 
-    const sys = `You are a technology transfer intelligence analyst working for a university. Your job is to find "industry asks" — posts where companies and industry partners have published a technology need, research challenge, or collaboration request that a university research group could respond to.
-
-You are NOT looking for universities advertising their own technologies. You are looking for INDUSTRY posting what they NEED.
-
-Target platforms: ${selPlatforms}
-Technology themes of interest: ${themesStr}
-
-Search for:
-- Industry technology needs and research challenges posted on open innovation platforms
-- Companies seeking external research partners or contract research
-- Industry requests to license-in technology from universities or research institutes
-- Corporate innovation challenges seeking novel solutions
-- Industry-posted collaboration briefs on technology transfer platforms
-
-For each industry ask you find, return ONLY a valid JSON array with no preamble, no markdown, no explanation:
-
-[
-  {
-    "title": "title of the industry ask or challenge",
-    "company": "company or organisation posting the need",
-    "platform": "platform where it was posted",
-    "description": "2-3 sentences describing what the company needs or is looking for",
-    "url": "direct URL or null",
-    "techArea": "specific technology area",
-    "type": "contract research" | "licensing in" | "collaboration" | "challenge / prize" | "other",
-    "deadline": "deadline or closing date if mentioned, else null",
-    "date": "date posted or null"
-  }
-]
-
-Return only real, verifiable industry asks. Do not invent or hallucinate entries.`;
+    const userMessage = `Search ${platStr} for current industry asks — companies posting technology needs or research collaboration requests — related to: ${themeStr}. Return as a JSON array only.`;
 
     try {
-      addLog("Sending to Claude with web search...");
-      const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      addLog("Calling OpenAI with web search...");
+
+      const resp = await fetch("https://api.openai.com/v1/responses", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": "Bearer " + apiKey.trim(),
         },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 4000,
-          system: sys,
-          tools: [{ type: "web_search_20250305", name: "web_search" }],
-          messages: [{ role: "user", content: `Search ${selPlatforms} for current industry asks — companies posting technology needs or research collaboration requests — related to: ${themesStr}. Return as a JSON array.` }]
+          model: "gpt-4o",
+          tools: [{ type: "web_search_preview" }],
+          instructions: SYSTEM_PROMPT + "\n\nPlatforms to search: " + platStr + "\nTechnology themes: " + themeStr,
+          input: userMessage,
         })
       });
 
       const data = await resp.json();
+
       if (data.error) throw new Error(data.error.message);
+
       addLog("Response received. Parsing...");
 
-      const text = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("\n");
+      // Extract text from OpenAI Responses API output array
+      const text = (data.output || [])
+        .filter(b => b.type === "message")
+        .flatMap(b => b.content || [])
+        .filter(c => c.type === "output_text")
+        .map(c => c.text)
+        .join("\n");
+
       setRaw(text);
 
       let opps = [];
-      const cleaned = text.replace(/```json|```/g, "").trim();
-      const match = cleaned.match(/\[[\s\S]*\]/);
-      if (match) {
+      const m = text.replace(/```json|```/g, "").match(/\[[\s\S]*\]/);
+      if (m) {
         try {
-          opps = JSON.parse(match[0]);
+          opps = JSON.parse(m[0]);
           addLog(`Parsed ${opps.length} industry ask${opps.length === 1 ? "" : "s"}.`);
         } catch {
           addLog("JSON parse error — raw response available.");
-          setError("Could not parse structured results. See raw output below.");
+          setError("Could not parse structured results. See raw output.");
         }
       } else {
-        addLog("No structured JSON in response.");
-        setError("Results returned in narrative format — see raw output.");
+        addLog("No JSON array found in response.");
+        setError("Results in narrative format — see raw output.");
       }
       setResults(opps);
-    } catch (e) {
-      addLog("Error: " + e.message);
-      setError(e.message);
+
+    } catch (err) {
+      addLog("Error: " + err.message);
+      setError(err.message);
     }
+
     addLog("Done.");
     setRunning(false);
   };
 
   const exportCSV = () => {
-    if (!results || !results.length) return;
-    const header = ["title","company","platform","type","techArea","description","url","deadline","date"];
-    const rows = results.map(r => header.map(k => `"${(r[k]||"").toString().replace(/"/g,'""')}"`).join(","));
-    const csv = [header.join(","), ...rows].join("\n");
+    if (!results?.length) return;
+    const cols = ["title","company","platform","type","techArea","description","url","deadline","date"];
+    const rows = results.map(r => cols.map(k => `"${(r[k]||"").toString().replace(/"/g,'""')}"`).join(","));
     const a = document.createElement("a");
-    a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+    a.href = "data:text/csv;charset=utf-8," + encodeURIComponent([cols.join(","), ...rows].join("\n"));
     a.download = "industry-asks.csv";
     a.click();
   };
 
-  const badgeClass = r => BADGE[(r.type||"").toLowerCase()] || "badge-other";
+  const badgeClass = r => BADGE_CLASS[(r.type||"").toLowerCase()] || "badge-other";
   const badgeLabel = r => BADGE_LABEL[(r.type||"").toLowerCase()] || "Other";
 
-  return React.createElement("div", null,
-    React.createElement("header", null,
-      React.createElement("h1", null, "Industry Ask Scout"),
-      React.createElement("p", null, "Find technology needs and research requests posted by industry — for your university TTO.")
+  const e = React.createElement;
+
+  return e("div", null,
+    e("header", null,
+      e("h1", null, "Industry Ask Scout"),
+      e("p",  null, "Find technology needs and research requests posted by industry — for your university TTO.")
     ),
 
-    React.createElement("div", { className: "layout" },
+    e("div", { className: "layout" },
 
-      React.createElement("div", { className: "panel" },
+      // ── Left panel ──
+      e("div", { className: "panel" },
 
-        React.createElement("div", null,
-          React.createElement("div", { className: "section-label" }, "Your research themes"),
-          React.createElement("div", { style: { marginBottom: 8 } },
-            themes.map(t =>
-              React.createElement("span", { key: t, className: "tag" },
-                t,
-                React.createElement("button", { onClick: () => setThemes(p => p.filter(x => x !== t)), title: "Remove" }, "×")
-              )
-            )
+        e("div", { className: "api-row" },
+          e("div", { className: "section-label" }, "OpenAI API key"),
+          e("input", {
+            type: "password",
+            value: apiKey,
+            onChange: ev => setApiKey(ev.target.value),
+            placeholder: "sk-...",
+            autoComplete: "off",
+          }),
+          e("span", { className: "api-note" },
+            "Get a key at ",
+            e("a", { href: "https://platform.openai.com/api-keys", target: "_blank", rel: "noopener" }, "platform.openai.com"),
+            ". Not stored anywhere."
+          )
+        ),
+
+        e("div", { className: "divider" }),
+
+        e("div", null,
+          e("div", { className: "section-label" }, "Research themes"),
+          e("div", { style: { marginBottom: 8 } },
+            themes.map(t => e("span", { key: t, className: "tag" },
+              t,
+              e("button", { onClick: () => setThemes(p => p.filter(x => x !== t)), title: "Remove" }, "×")
+            ))
           ),
-          React.createElement("div", { className: "add-row" },
-            React.createElement("input", {
+          e("div", { className: "add-row" },
+            e("input", {
               value: newTheme,
-              onChange: e => setNewTheme(e.target.value),
-              onKeyDown: e => e.key === "Enter" && addTheme(),
+              onChange: ev => setNewTheme(ev.target.value),
+              onKeyDown: ev => ev.key === "Enter" && addTheme(),
               placeholder: "Add theme…"
             }),
-            React.createElement("button", { onClick: addTheme }, "+")
+            e("button", { onClick: addTheme }, "+")
           )
         ),
 
-        React.createElement("div", { className: "divider" }),
+        e("div", { className: "divider" }),
 
-        React.createElement("div", null,
-          React.createElement("div", { className: "section-label" }, "Platforms to search"),
-          PLATFORMS.map(p =>
-            React.createElement("label", { key: p.id, className: "plat-label" },
-              React.createElement("input", {
-                type: "checkbox",
-                checked: platforms.includes(p.id),
-                onChange: () => setPlatforms(prev =>
-                  prev.includes(p.id) ? prev.filter(x => x !== p.id) : [...prev, p.id]
-                )
-              }),
-              p.label
-            )
-          )
+        e("div", null,
+          e("div", { className: "section-label" }, "Platforms to search"),
+          PLATFORMS.map(p => e("label", { key: p.id, className: "plat-label" },
+            e("input", {
+              type: "checkbox",
+              checked: platforms.includes(p.id),
+              onChange: () => setPlatforms(prev =>
+                prev.includes(p.id) ? prev.filter(x => x !== p.id) : [...prev, p.id]
+              )
+            }),
+            p.label
+          ))
         ),
 
-        React.createElement("div", { className: "divider" }),
+        e("div", { className: "divider" }),
 
-        React.createElement("button", {
+        e("button", {
           className: "run-btn",
           onClick: runSearch,
-          disabled: running || themes.length === 0 || platforms.length === 0
+          disabled: running || !apiKey.trim() || themes.length === 0 || platforms.length === 0
         },
           running
-            ? React.createElement(React.Fragment, null, React.createElement("span", { className: "spin" }, "↻"), " Searching…")
+            ? e(React.Fragment, null, e("span", { className: "spin" }, "↻"), " Searching…")
             : "🔍 Find industry asks"
         ),
 
-        results && results.length > 0 &&
-          React.createElement("button", { className: "export-btn", onClick: exportCSV }, "↓ Export CSV")
+        results?.length > 0 &&
+          e("button", { className: "export-btn", onClick: exportCSV }, "↓ Export CSV")
       ),
 
-      React.createElement("div", { className: "results-panel" },
+      // ── Right: results ──
+      e("div", { className: "results-panel" },
 
-        log.length > 0 && React.createElement("div", { className: "log-box" },
-          React.createElement("button", {
-            className: "log-toggle",
-            onClick: () => setShowLog(p => !p)
-          }, (showLog ? "▾" : "▸") + " Search log"),
-          showLog && log.map((l, i) =>
-            React.createElement("div", { key: i, className: "log-line" },
-              React.createElement("span", { className: "log-time" }, l.t),
-              React.createElement("span", { className: "log-msg" }, l.msg)
-            )
+        log.length > 0 && e("div", { className: "log-box" },
+          e("button", { className: "log-toggle", onClick: () => setShowLog(p => !p) },
+            (showLog ? "▾" : "▸") + " Search log"
+          ),
+          showLog && e("div", { style: { display: "flex", flexDirection: "column", gap: 3 } },
+            log.map((l, i) => e("div", { key: i, className: "log-line" },
+              e("span", { className: "log-time" }, l.t),
+              e("span", { className: "log-msg"  }, l.msg)
+            ))
           )
         ),
 
-        error && React.createElement("div", { className: "error-box" },
+        error && e("div", { className: "error-box" },
           "⚠ " + error,
-          raw && React.createElement("details", null,
-            React.createElement("summary", null, "Show raw response"),
-            React.createElement("pre", null, raw)
+          raw && e("details", null,
+            e("summary", null, "Show raw response"),
+            e("pre", null, raw)
           )
         ),
 
-        results === null && !running && React.createElement("div", { className: "empty-state" },
-          React.createElement("div", { className: "icon" }, "🏭"),
-          React.createElement("p", null, "Find what industry is looking for."),
-          React.createElement("p", { className: "sub" }, "Add your research themes and run a search.")
+        results === null && !running && e("div", { className: "empty-state" },
+          e("div", { className: "icon" }, "🏭"),
+          e("p", null, "Find what industry is looking for."),
+          e("p", { className: "sub" }, "Add your API key, set themes, and run a search.")
         ),
 
-        results && results.length === 0 && React.createElement("div", { className: "empty-state" },
-          React.createElement("p", null, "No results found. Try broader themes or different platforms.")
+        results?.length === 0 && e("div", { className: "empty-state" },
+          e("p", null, "No results found. Try broader themes or different platforms.")
         ),
 
-        results && results.length > 0 && React.createElement(React.Fragment, null,
-          React.createElement("div", { className: "results-header" },
+        results?.length > 0 && e(React.Fragment, null,
+          e("div", { className: "results-header" },
             results.length + " industry ask" + (results.length === 1 ? "" : "s") + " found"
           ),
-          results.map((r, i) =>
-            React.createElement("div", { key: i, className: "result-card" },
-              React.createElement("div", { className: "card-top" },
-                React.createElement("span", { className: "badge " + badgeClass(r) }, badgeLabel(r)),
-                React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center" } },
-                  r.deadline && React.createElement("span", { className: "deadline" }, "⏱ Deadline: " + r.deadline),
-                  r.date && React.createElement("span", { className: "date-label" }, r.date)
-                )
-              ),
-              React.createElement("div", { className: "card-title" }, r.title || "Untitled"),
-              React.createElement("div", { className: "card-meta" },
-                r.company || "Unknown company",
-                r.platform && React.createElement(React.Fragment, null,
-                  React.createElement("span", { className: "sep" }, "·"),
-                  r.platform
-                )
-              ),
-              r.description && React.createElement("div", { className: "card-desc" }, r.description),
-              React.createElement("div", { className: "card-footer" },
-                r.techArea && React.createElement("span", { className: "tech-tag" }, "# " + r.techArea),
-                r.url && React.createElement("a", {
-                  href: r.url, target: "_blank", rel: "noopener noreferrer", className: "view-link"
-                }, "View ↗")
+          results.map((r, i) => e("div", { key: i, className: "result-card" },
+            e("div", { className: "card-top" },
+              e("span", { className: "badge " + badgeClass(r) }, badgeLabel(r)),
+              e("div", { style: { display: "flex", gap: 10, alignItems: "center" } },
+                r.deadline && e("span", { className: "deadline" }, "⏱ " + r.deadline),
+                r.date     && e("span", { className: "date-lbl" }, r.date)
               )
+            ),
+            e("div", { className: "card-title" }, r.title || "Untitled"),
+            e("div", { className: "card-meta"  },
+              r.company || "Unknown",
+              r.platform && (" · " + r.platform)
+            ),
+            r.description && e("div", { className: "card-desc" }, r.description),
+            e("div", { className: "card-footer" },
+              r.techArea && e("span", { className: "tech-tag" }, "# " + r.techArea),
+              r.url && e("a", {
+                href: r.url, target: "_blank", rel: "noopener noreferrer", className: "view-link"
+              }, "View ↗")
             )
-          )
+          ))
         )
       )
     )
