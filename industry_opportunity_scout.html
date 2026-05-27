@@ -120,45 +120,58 @@ var BADGE_LABEL = { "contract research":"Contract research","licensing in":"Lice
 var STATUS_CLASS = { "confirmed open":"b-confirmed","assumed open":"b-assumed","unknown":"b-unknown" };
 
 function buildPrompt(theme, platStr, platSearchTerms, today) {
-  return [
-    "You are a technology transfer intelligence analyst at a university. Today is " + today + ".",
-    "",
-    "TASK: Find industry asks — opportunities where COMPANIES or GOVERNMENT BODIES are seeking external research expertise, licensing technology from universities, or posting collaboration challenges — related to the topic: \"" + theme + "\"",
-    "",
-    "You are NOT looking for universities advertising their IP. You want INDUSTRY posting what they NEED.",
-    "",
-    "SEARCH APPROACH:",
-    "- Do NOT just try to navigate to login-gated platform homepages",
-    "- Instead, search the open web broadly using queries like:",
-    "  * \"" + theme + "\" \"technology need\" OR \"research partner\" OR \"seeking\" OR \"challenge\" 2025 OR 2026",
-    "  * \"" + theme + "\" \"open innovation\" OR \"collaboration\" industry 2025 OR 2026",
-    "  * \"" + theme + "\" \"contract research\" OR \"licensing\" university partner",
-    "- Also search specifically on these platforms using: " + platSearchTerms,
-    "- Include results from Innovate UK competitions and Find a Tender (UK gov R&D tenders) which are fully public",
-    "- Cast a wide net — it is better to return 10 results with some uncertainty than 0 results",
-    "",
-    "FILTERING:",
-    "- Prefer results from the last 18 months (since Jan 2025)",
-    "- Include an opportunity even if you cannot fully confirm it is still open — mark it as 'assumed open'",
-    "- Only exclude something if you have clear evidence it is CLOSED (e.g. deadline explicitly passed)",
-    "- Do not exclude results just because you cannot verify their current status",
-    "",
-    "Return ONLY a valid JSON array. No preamble, no markdown fences, no explanation:",
-    "[{",
-    "  \"title\": \"title of the opportunity\",",
-    "  \"company\": \"company or organisation posting the need\",",
-    "  \"platform\": \"platform or source found on\",",
-    "  \"description\": \"2-3 sentences on what they need\",",
-    "  \"url\": \"best URL available or null\",",
-    "  \"techArea\": \"specific technology area within " + theme + "\",",
-    "  \"type\": \"contract research or licensing in or collaboration or challenge / prize or other\",",
-    "  \"deadline\": \"closing date if stated, else null\",",
-    "  \"date\": \"date posted if visible, else null\",",
-    "  \"activeStatus\": \"confirmed open or assumed open or unknown\"",
-    "}]",
-    "",
-    "If you genuinely find nothing after a thorough search, return an empty array []. Do not invent entries."
-  ].join("\n");
+  var lines = [];
+  lines.push("You are a technology transfer intelligence analyst at a university. Today is " + today + ".");
+  lines.push("");
+  lines.push("TASK: Find OPEN CALLS where a company or government body is actively seeking a university or external research partner for: \"" + theme + "\"");
+  lines.push("");
+  lines.push("THE LITMUS TEST — only include a result if ALL of these are true:");
+  lines.push("1. A university researcher could SUBMIT A RESPONSE or APPLY to this TODAY");
+  lines.push("2. It is posted by INDUSTRY or GOVERNMENT — not a university advertising its own IP");
+  lines.push("3. It is an OPEN CALL — not a news article about a partnership already agreed or signed");
+  lines.push("4. It was posted or confirmed active within the last 6 months (since December 2025)");
+  lines.push("");
+  lines.push("EXCLUDE — do not return any of the following:");
+  lines.push("- News articles or blog posts announcing collaborations that have ALREADY been signed or agreed");
+  lines.push("  Example of what NOT to include: 'Company X partners with Company Y to develop Z' — this is a done deal");
+  lines.push("- Content from PR or news sites: pulse2.com, businesswire.com, prnewswire.com, globenewswire.com, techcrunch.com, venturebeat.com");
+  lines.push("- Thought leadership articles, case studies, or general innovation commentary");
+  lines.push("- University IP listings or technology transfer office showcases");
+  lines.push("- Anything posted before December 2025 unless it explicitly confirms it is still open for applications");
+  lines.push("- Anything where the deadline has clearly passed");
+  lines.push("");
+  lines.push("VALID RESULTS look like these examples:");
+  lines.push("- An Innovate UK competition open for proposals from university-industry consortia");
+  lines.push("- A Find a Tender R&D procurement notice where a company seeks research services");
+  lines.push("- An active challenge on yet2 or NineSigma where a company states a technical problem to solve");
+  lines.push("- A Catapult or KTN open call inviting university partners to respond");
+  lines.push("- A corporate open innovation brief explicitly inviting external research proposals");
+  lines.push("");
+  lines.push("SEARCH APPROACH:");
+  lines.push("- Use focused web search queries such as:");
+  lines.push("  * \"" + theme + "\" \"open call\" OR \"call for proposals\" OR \"seeking\" 2026");
+  lines.push("  * \"" + theme + "\" \"research partner\" OR \"university partner\" wanted 2026");
+  lines.push("  * \"" + theme + "\" \"contract research\" OR \"R&D tender\" site:find-tender.service.gov.uk OR site:apply-for-innovation-funding.service.gov.uk");
+  lines.push("- Also search: " + platSearchTerms);
+  lines.push("- Prefer results from: yet2.com, ninesigma.com, apply-for-innovation-funding.service.gov.uk, find-tender.service.gov.uk, catapult.org.uk, ktn-uk.org, haloinnovation.com");
+  lines.push("- Reject results from general news or PR sites");
+  lines.push("");
+  lines.push("Return ONLY a valid JSON array. No preamble, no markdown fences:");
+  lines.push("[{");
+  lines.push("  \"title\": \"title of the open call\",");
+  lines.push("  \"company\": \"organisation posting the need\",");
+  lines.push("  \"platform\": \"source platform\",");
+  lines.push("  \"description\": \"2-3 sentences on what they are seeking\",");
+  lines.push("  \"url\": \"direct URL to the listing\",");
+  lines.push("  \"techArea\": \"specific technology area\",");
+  lines.push("  \"type\": \"contract research or licensing in or collaboration or challenge / prize or other\",");
+  lines.push("  \"deadline\": \"closing date or null\",");
+  lines.push("  \"date\": \"date posted or null\",");
+  lines.push("  \"activeStatus\": \"confirmed open or assumed open\"");
+  lines.push("}]");
+  lines.push("");
+  lines.push("Return [] if nothing passes the litmus test. Do not invent entries.");
+  return lines.join("\n");
 }
 
 function apiCall(apiKey, theme, platStr, platSearchTerms, today) {
