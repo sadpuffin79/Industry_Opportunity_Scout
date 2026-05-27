@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Industry Ask Scout</title>
+<title>Industry Partnering Scout</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f3ef; color: #1a1a1a; min-height: 100vh; padding: 32px 24px; }
-  #root { max-width: 980px; margin: 0 auto; }
+  #root { max-width: 1000px; margin: 0 auto; }
   header { margin-bottom: 24px; }
   header h1 { font-size: 20px; font-weight: 600; color: #111; margin-bottom: 4px; }
   header p { font-size: 13px; color: #666; }
-  .layout { display: grid; grid-template-columns: 240px 1fr; gap: 20px; align-items: start; }
+  .layout { display: grid; grid-template-columns: 250px 1fr; gap: 20px; align-items: start; }
   .panel { background: #fff; border-radius: 12px; border: 1px solid #e5e3dc; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
   .slabel { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: #999; margin-bottom: 6px; }
   .tag { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 12px; background: #f4f3ef; border: 1px solid #e0ddd5; color: #333; margin: 0 4px 4px 0; }
@@ -25,9 +25,9 @@
   .add-row button { padding: 6px 10px; border: 1px solid #e0ddd5; border-radius: 8px; background: #faf9f7; cursor: pointer; font-size: 16px; color: #555; }
   .add-row button:hover { background: #f0ede6; }
   .divider { height: 1px; background: #f0ede6; }
-  .plat { display: flex; align-items: center; gap: 8px; padding: 4px 0; cursor: pointer; font-size: 12px; color: #333; }
-  .plat input { accent-color: #555; width: 13px; height: 13px; flex-shrink: 0; }
-  .grp-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: #bbb; margin: 8px 0 2px; }
+  .type-row { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; cursor: pointer; font-size: 12px; color: #333; }
+  .type-row input { accent-color: #555; width: 13px; height: 13px; flex-shrink: 0; margin-top: 2px; }
+  .type-row .sub { font-size: 11px; color: #aaa; display: block; margin-top: 1px; }
   .api-input { width: 100%; padding: 7px 10px; border: 1px solid #e0ddd5; border-radius: 8px; font-size: 12px; background: #faf9f7; color: #111; outline: none; font-family: monospace; }
   .api-input:focus { border-color: #888; }
   .api-note { font-size: 11px; color: #aaa; }
@@ -46,38 +46,39 @@
   .progress { background: #f4f3ef; border-radius: 8px; height: 6px; overflow: hidden; margin-top: 4px; }
   .progress-bar { height: 100%; background: #1a1a1a; border-radius: 8px; transition: width .4s ease; }
   .err-box { background: #fff5f5; border: 1px solid #fcd4d4; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #c0392b; }
-  .err-box details { margin-top: 8px; }
-  .err-box summary { cursor: pointer; font-size: 12px; }
-  .err-box pre { font-size: 11px; margin-top: 6px; white-space: pre-wrap; word-break: break-word; max-height: 200px; overflow: auto; color: #555; }
   .empty { background: #fff; border: 1px solid #e5e3dc; border-radius: 12px; padding: 48px 24px; text-align: center; }
   .empty .icon { font-size: 28px; margin-bottom: 10px; }
   .empty p { font-size: 13px; color: #999; }
   .empty p.sub { font-size: 12px; color: #bbb; margin-top: 4px; }
-  .res-header { font-size: 12px; color: #999; padding: 0 2px; }
-  .theme-group { margin-bottom: 4px; }
-  .theme-heading { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: .06em; padding: 6px 2px 4px; border-bottom: 1px solid #f0ede6; margin-bottom: 8px; }
-  .card { background: #fff; border: 1px solid #e5e3dc; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+  .filterbar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .filter-chip { font-size: 11px; padding: 4px 10px; border-radius: 20px; border: 1px solid #e0ddd5; background: #fff; color: #666; cursor: pointer; }
+  .filter-chip.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .res-count { font-size: 12px; color: #999; margin-left: auto; }
+  .card { background: #fff; border: 1px solid #e5e3dc; border-radius: 12px; padding: 16px; display: flex; gap: 14px; margin-bottom: 8px; }
   .card:hover { border-color: #ccc; }
+  .card-score { flex-shrink: 0; width: 38px; text-align: center; }
+  .score-num { font-size: 20px; font-weight: 600; line-height: 1; }
+  .score-lbl { font-size: 9px; color: #bbb; text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
+  .s5 { color: #1a7a4a; } .s4 { color: #4a9a3a; } .s3 { color: #a06500; } .s2 { color: #c47a30; } .s1 { color: #bbb; }
+  .card-body { flex: 1; display: flex; flex-direction: column; gap: 7px; min-width: 0; }
   .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
   .card-badges { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-  .card-dates { display: flex; gap: 10px; align-items: center; }
+  .card-dates { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
   .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; }
-  .b-research  { background: #e8f0fe; color: #1a56c4; }
-  .b-licensing { background: #e6f9f0; color: #1a7a4a; }
-  .b-collab    { background: #f0ecfe; color: #5b3fc4; }
-  .b-challenge { background: #fff8e6; color: #a06500; }
-  .b-other     { background: #f4f3ef; color: #666; }
+  .t-sponsored { background: #e8f0fe; color: #1a56c4; }
+  .t-licensing { background: #e6f9f0; color: #1a7a4a; }
+  .t-consortia { background: #f0ecfe; color: #5b3fc4; }
+  .t-tender    { background: #fff8e6; color: #a06500; }
   .b-confirmed { background: #e6f9f0; color: #1a7a4a; }
-  .b-assumed   { background: #fff8e6; color: #a06500; }
-  .b-unknown   { background: #f4f3ef; color: #888; }
+  .b-assumed   { background: #fbf3e3; color: #a06500; }
   .deadline { font-size: 11px; color: #d97706; }
   .date-lbl { font-size: 11px; color: #bbb; }
   .card-title { font-size: 14px; font-weight: 500; color: #111; line-height: 1.4; }
   .card-meta  { font-size: 12px; color: #777; }
   .card-desc  { font-size: 12px; color: #666; line-height: 1.6; }
-  .card-foot  { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
+  .card-foot  { display: flex; align-items: center; justify-content: space-between; margin-top: 1px; }
   .tech-tag   { font-size: 11px; color: #aaa; }
-  .view-link  { font-size: 11px; color: #1a56c4; text-decoration: none; }
+  .view-link  { font-size: 11px; color: #1a56c4; text-decoration: none; font-weight: 500; }
   .view-link:hover { text-decoration: underline; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .spin { display: inline-block; animation: spin 1s linear infinite; }
@@ -86,101 +87,80 @@
 <body>
 <div id="root"></div>
 <script>
-var React = window.React;
-var ReactDOM = window.ReactDOM;
-var useState = React.useState;
-var useRef = React.useRef;
+var React = window.React, ReactDOM = window.ReactDOM, useState = React.useState;
 
-var PLATFORM_GROUPS = [
-  { group: "Open innovation platforms", platforms: [
-    { id: "inpart",     label: "In-Part",             searchTerms: "site:in-part.com OR \"In-Part\"" },
-    { id: "halo",       label: "Halo Innovation",      searchTerms: "site:haloinnovation.com OR \"Halo Innovation\"" },
-    { id: "yet2",       label: "yet2",                 searchTerms: "site:yet2.com OR \"yet2.com\"" },
-    { id: "ninesigma",  label: "NineSigma",            searchTerms: "site:ninesigma.com OR \"NineSigma\"" },
-    { id: "wazoku",     label: "Wazoku / InnoCentive", searchTerms: "site:wazoku.com OR site:innocentive.com OR \"InnoCentive\" OR \"Wazoku\"" },
-    { id: "agorize",    label: "Agorize",              searchTerms: "site:agorize.com OR \"Agorize\"" },
-    { id: "ennomotive", label: "Ennomotive",           searchTerms: "site:ennomotive.com OR \"Ennomotive\"" },
-  ]},
-  { group: "UK funding & government", platforms: [
-    { id: "innovateuk", label: "Innovate UK",          searchTerms: "site:apply-for-innovation-funding.service.gov.uk OR \"Innovate UK\" competition open" },
-    { id: "ktn",        label: "KTN UK",               searchTerms: "site:ktn-uk.org OR \"Knowledge Transfer Network\"" },
-    { id: "findtender", label: "Find a Tender",        searchTerms: "site:find-tender.service.gov.uk research collaboration university" },
-    { id: "catapult",   label: "Catapult Network",     searchTerms: "site:catapult.org.uk OR \"Digital Catapult\" OR \"ORE Catapult\" OR \"HVM Catapult\" challenge open" },
-  ]},
-  { group: "European & international", platforms: [
-    { id: "eufunding",  label: "EU Funding & Tenders", searchTerms: "site:ec.europa.eu funding-tenders OR \"Horizon Europe\" open call industry" },
-    { id: "presans",    label: "Presans",              searchTerms: "site:presans.com OR \"Presans\" technology need" },
-  ]}
+var OPP_TYPES = [
+  { id: "sponsored", label: "Industry-sponsored research", badge: "t-sponsored", short: "Sponsored research",
+    desc: "Companies/foundations funding university research",
+    guidance: "Companies, charities or foundations offering to FUND university research, or issuing requests for research proposals (RFPs). Search corporate 'open innovation', 'research collaboration' and 'work with us' pages, and foundation/charity research funding calls." },
+  { id: "licensing", label: "Technology licensing", badge: "t-licensing", short: "Licensing",
+    desc: "Companies seeking to in-license / scout technology",
+    guidance: "Companies actively SEEKING to in-license or scout external technology in this field (so the university could out-license to them). Search for 'seeking to license', 'technology scouting request', 'request for technology', corporate technology-scouting and venturing pages." },
+  { id: "consortia", label: "Collaborative R&D / consortia", badge: "t-consortia", short: "Collaborative R&D",
+    desc: "Funded calls requiring industry-academic teams",
+    guidance: "Funding competitions that REQUIRE or invite industry-academic consortia. Search Innovate UK (apply-for-innovation-funding.service.gov.uk), Horizon Europe (ec.europa.eu funding-tenders portal), SBIR/STTR (sbir.gov), NSF, NIH, and other national innovation funders." },
+  { id: "tender", label: "Public R&D tenders", badge: "t-tender", short: "R&D tender",
+    desc: "Government procurement of research services",
+    guidance: "Government or public-body procurement of research/R&D SERVICES. Search Find a Tender (find-tender.service.gov.uk), Contracts Finder, TED (ted.europa.eu), SAM.gov and Grants.gov. Look for R&D service tenders (CPV 73000000) or notices seeking research providers." },
 ];
 
-var ALL_PLATFORMS = PLATFORM_GROUPS.reduce(function(a, g) { return a.concat(g.platforms); }, []);
+var TYPE_BADGE = {}; var TYPE_SHORT = {};
+OPP_TYPES.forEach(function(t) { TYPE_BADGE[t.id] = t.badge; TYPE_SHORT[t.id] = t.short; });
 
-var BADGE_CLASS = { "contract research":"b-research","licensing in":"b-licensing","collaboration":"b-collab","challenge / prize":"b-challenge","other":"b-other" };
-var BADGE_LABEL = { "contract research":"Contract research","licensing in":"Licensing in","collaboration":"Collaboration","challenge / prize":"Challenge / prize","other":"Other" };
-var STATUS_CLASS = { "confirmed open":"b-confirmed","assumed open":"b-assumed","unknown":"b-unknown" };
-
-function buildPrompt(theme, platStr, platSearchTerms, today) {
-  var lines = [];
-  lines.push("You are a technology transfer intelligence analyst at a university. Today is " + today + ".");
-  lines.push("");
-  lines.push("TASK: Find OPEN CALLS where a company or government body is actively seeking a university or external research partner for: \"" + theme + "\"");
-  lines.push("");
-  lines.push("THE LITMUS TEST — only include a result if ALL of these are true:");
-  lines.push("1. A university researcher could SUBMIT A RESPONSE or APPLY to this TODAY");
-  lines.push("2. It is posted by INDUSTRY or GOVERNMENT — not a university advertising its own IP");
-  lines.push("3. It is an OPEN CALL — not a news article about a partnership already agreed or signed");
-  lines.push("4. It was posted or confirmed active within the last 6 months (since December 2025)");
-  lines.push("");
-  lines.push("EXCLUDE — do not return any of the following:");
-  lines.push("- News articles or blog posts announcing collaborations that have ALREADY been signed or agreed");
-  lines.push("  Example of what NOT to include: 'Company X partners with Company Y to develop Z' — this is a done deal");
-  lines.push("- Content from PR or news sites: pulse2.com, businesswire.com, prnewswire.com, globenewswire.com, techcrunch.com, venturebeat.com");
-  lines.push("- Thought leadership articles, case studies, or general innovation commentary");
-  lines.push("- University IP listings or technology transfer office showcases");
-  lines.push("- Anything posted before December 2025 unless it explicitly confirms it is still open for applications");
-  lines.push("- Anything where the deadline has clearly passed");
-  lines.push("");
-  lines.push("VALID RESULTS look like these examples:");
-  lines.push("- An Innovate UK competition open for proposals from university-industry consortia");
-  lines.push("- A Find a Tender R&D procurement notice where a company seeks research services");
-  lines.push("- An active challenge on yet2 or NineSigma where a company states a technical problem to solve");
-  lines.push("- A Catapult or KTN open call inviting university partners to respond");
-  lines.push("- A corporate open innovation brief explicitly inviting external research proposals");
-  lines.push("");
-  lines.push("SEARCH APPROACH:");
-  lines.push("- Use focused web search queries such as:");
-  lines.push("  * \"" + theme + "\" \"open call\" OR \"call for proposals\" OR \"seeking\" 2026");
-  lines.push("  * \"" + theme + "\" \"research partner\" OR \"university partner\" wanted 2026");
-  lines.push("  * \"" + theme + "\" \"contract research\" OR \"R&D tender\" site:find-tender.service.gov.uk OR site:apply-for-innovation-funding.service.gov.uk");
-  lines.push("- Also search: " + platSearchTerms);
-  lines.push("- Prefer results from: yet2.com, ninesigma.com, apply-for-innovation-funding.service.gov.uk, find-tender.service.gov.uk, catapult.org.uk, ktn-uk.org, haloinnovation.com");
-  lines.push("- Reject results from general news or PR sites");
-  lines.push("");
-  lines.push("Return ONLY a valid JSON array. No preamble, no markdown fences:");
-  lines.push("[{");
-  lines.push("  \"title\": \"title of the open call\",");
-  lines.push("  \"company\": \"organisation posting the need\",");
-  lines.push("  \"platform\": \"source platform\",");
-  lines.push("  \"description\": \"2-3 sentences on what they are seeking\",");
-  lines.push("  \"url\": \"direct URL to the listing\",");
-  lines.push("  \"techArea\": \"specific technology area\",");
-  lines.push("  \"type\": \"contract research or licensing in or collaboration or challenge / prize or other\",");
-  lines.push("  \"deadline\": \"closing date or null\",");
-  lines.push("  \"date\": \"date posted or null\",");
-  lines.push("  \"activeStatus\": \"confirmed open or assumed open\"");
-  lines.push("}]");
-  lines.push("");
-  lines.push("Return [] if nothing passes the litmus test. Do not invent entries.");
-  return lines.join("\n");
+function buildPrompt(theme, types, today) {
+  var L = [];
+  L.push("You are a business development and technology transfer analyst at a university. Today is " + today + ".");
+  L.push("");
+  L.push("GOAL: Find SPECIFIC, currently-open industry partnering opportunities related to: \"" + theme + "\"");
+  L.push("Scope is GLOBAL — include opportunities from any country.");
+  L.push("");
+  L.push("You are looking for opportunities in these categories. For each, here is what to find and where:");
+  L.push("");
+  types.forEach(function(t, i) {
+    L.push((i + 1) + ". " + t.label.toUpperCase());
+    L.push("   " + t.guidance);
+    L.push("");
+  });
+  L.push("HARD REQUIREMENTS — reject any result that fails ANY of these:");
+  L.push("- It MUST have a specific listing URL describing THIS opportunity (not a homepage, not a news article, not a search page)");
+  L.push("- It MUST be something a university could respond to NOW (apply, submit a proposal, respond to a tender, or make a licensing enquiry)");
+  L.push("- It MUST be posted or confirmed active within the last 12 months, with no passed deadline");
+  L.push("- The SEEKER must be a company, government body, or funder — NOT a university advertising its own IP");
+  L.push("");
+  L.push("REJECT and never return:");
+  L.push("- News articles, press releases or blog posts (e.g. pulse2.com, businesswire.com, prnewswire.com, globenewswire.com, techcrunch.com, venturebeat.com)");
+  L.push("- Announcements of partnerships or deals that have ALREADY been agreed");
+  L.push("- General innovation commentary, thought leadership, or case studies");
+  L.push("- University technology showcases or IP listings");
+  L.push("");
+  L.push("RELEVANCE SCORE: rate each result 1-5 for how directly it matches \"" + theme + "\" (5 = squarely on topic; 3 = adjacent; 1 = tangential). Only return results scoring 3 or above.");
+  L.push("");
+  L.push("Return ONLY a valid JSON array. No preamble, no markdown fences:");
+  L.push("[{");
+  L.push("  \"title\": \"specific opportunity title\",");
+  L.push("  \"organisation\": \"company, funder or body seeking the partner\",");
+  L.push("  \"type\": \"sponsored or licensing or consortia or tender\",");
+  L.push("  \"source\": \"platform or website where found\",");
+  L.push("  \"description\": \"2-3 sentences: what they want and what a university would provide\",");
+  L.push("  \"url\": \"direct URL to this specific opportunity\",");
+  L.push("  \"techArea\": \"specific sub-area\",");
+  L.push("  \"deadline\": \"closing date or null\",");
+  L.push("  \"datePosted\": \"date posted or null\",");
+  L.push("  \"relevance\": 1-5,");
+  L.push("  \"activeStatus\": \"confirmed open or assumed open\"");
+  L.push("}]");
+  L.push("");
+  L.push("Return [] if nothing genuine passes these tests. Quality over quantity — do not invent or pad.");
+  return L.join("\n");
 }
 
-function apiCall(apiKey, theme, platStr, platSearchTerms, today) {
-  var prompt = buildPrompt(theme, platStr, platSearchTerms, today);
-  var userMsg = "Search broadly for active industry asks related to \"" + theme + "\" across " + platStr + " and the wider web. Today is " + today + ". Return as JSON array.";
+function apiCall(apiKey, theme, types, today) {
+  var typeLabels = types.map(function(t) { return t.short; }).join(", ");
+  var userMsg = "Find currently-open " + typeLabels + " opportunities related to \"" + theme + "\", globally. Today is " + today + ". Apply the hard requirements strictly. Return JSON array.";
   return fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
-    body: JSON.stringify({ model: "gpt-4o", tools: [{ type: "web_search_preview" }], instructions: prompt, input: userMsg })
+    body: JSON.stringify({ model: "gpt-4o", tools: [{ type: "web_search_preview" }], instructions: buildPrompt(theme, types, today), input: userMsg })
   }).then(function(r) { return r.json(); }).then(function(data) {
     if (data.error) throw new Error(data.error.message);
     var text = (data.output || [])
@@ -189,119 +169,97 @@ function apiCall(apiKey, theme, platStr, platSearchTerms, today) {
       .filter(function(c) { return c.type === "output_text"; })
       .map(function(c) { return c.text; }).join("\n");
     var m = text.replace(/```json|```/g, "").match(/\[[\s\S]*\]/);
-    if (m) {
-      try { return JSON.parse(m[0]); } catch(e) { return []; }
-    }
+    if (m) { try { return JSON.parse(m[0]); } catch(e) { return []; } }
     return [];
   });
 }
 
 function App() {
-  var _a = useState(""),          apiKey    = _a[0], setApiKey    = _a[1];
-  var _b = useState(["materials science","medical devices","AI / machine learning"]), themes = _b[0], setThemes = _b[1];
-  var _c = useState(""),          newTheme  = _c[0], setNewTheme  = _c[1];
-  var _d = useState(["inpart","halo","yet2","ninesigma","innovateuk","ktn","findtender"]), selPlats = _d[0], setSelPlats = _d[1];
-  var _e = useState(false),       running   = _e[0], setRunning   = _e[1];
-  var _f = useState(null),        results   = _f[0], setResults   = _f[1];
-  var _g = useState([]),          log       = _g[0], setLog       = _g[1];
-  var _h = useState(true),        showLog   = _h[0], setShowLog   = _h[1];
-  var _i = useState(null),        error     = _i[0], setError     = _i[1];
-  var _j = useState(0),           progress  = _j[0], setProgress  = _j[1];
+  var a = useState(""),  apiKey = a[0], setApiKey = a[1];
+  var b = useState(["materials science","medical devices","AI / machine learning"]), themes = b[0], setThemes = b[1];
+  var c = useState(""), newTheme = c[0], setNewTheme = c[1];
+  var d = useState(["sponsored","licensing","consortia","tender"]), selTypes = d[0], setSelTypes = d[1];
+  var ee = useState(false), running = ee[0], setRunning = ee[1];
+  var f = useState(null), results = f[0], setResults = f[1];
+  var g = useState([]), log = g[0], setLog = g[1];
+  var h = useState(true), showLog = h[0], setShowLog = h[1];
+  var ii = useState(null), error = ii[0], setError = ii[1];
+  var j = useState(0), progress = j[0], setProgress = j[1];
+  var k = useState("all"), filterType = k[0], setFilterType = k[1];
 
   function addTheme() {
     var t = newTheme.trim();
-    if (t && !themes.includes(t)) { setThemes(function(p) { return p.concat([t]); }); setNewTheme(""); }
+    if (t && themes.indexOf(t) === -1) { setThemes(function(p) { return p.concat([t]); }); setNewTheme(""); }
   }
-
-  function togglePlat(id) {
-    setSelPlats(function(prev) {
-      return prev.includes(id) ? prev.filter(function(x) { return x !== id; }) : prev.concat([id]);
-    });
+  function toggleType(id) {
+    setSelTypes(function(prev) { return prev.indexOf(id) > -1 ? prev.filter(function(x) { return x !== id; }) : prev.concat([id]); });
   }
 
   async function runSearch() {
     if (!apiKey.trim()) { setError("Please enter your OpenAI API key."); return; }
-    setRunning(true); setResults({}); setError(null); setShowLog(true); setProgress(0);
+    setRunning(true); setResults([]); setError(null); setShowLog(true); setProgress(0); setFilterType("all");
 
     var logs = [];
     function addLog(msg) { logs.push({ t: new Date().toLocaleTimeString("en-GB"), msg: msg }); setLog(logs.slice()); }
 
-    var chosen      = ALL_PLATFORMS.filter(function(p) { return selPlats.includes(p.id); });
-    var platStr     = chosen.map(function(p) { return p.label; }).join(", ");
-    var platSearch  = chosen.map(function(p) { return p.searchTerms; }).join(" OR ");
-    var today       = new Date().toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" });
-    var total       = themes.length;
+    var types = OPP_TYPES.filter(function(t) { return selTypes.indexOf(t.id) > -1; });
+    var today = new Date().toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" });
 
-    addLog("Starting — " + total + " theme" + (total === 1 ? "" : "s") + ", one search each");
-    addLog("Platforms: " + platStr);
+    addLog("Starting — " + themes.length + " theme(s) x " + types.length + " type(s)");
+    addLog("Types: " + types.map(function(t){return t.short;}).join(", "));
 
-    var allResults = {};
-    themes.forEach(function(t) { allResults[t] = []; });
-
+    var all = [];
     for (var i = 0; i < themes.length; i++) {
       var theme = themes[i];
-      addLog("Searching: \"" + theme + "\" (" + (i+1) + "/" + total + ")...");
+      addLog("Searching \"" + theme + "\" (" + (i+1) + "/" + themes.length + ")...");
       try {
-        var opps = await apiCall(apiKey.trim(), theme, platStr, platSearch, today);
-        allResults[theme] = opps;
-        addLog("  → " + opps.length + " result" + (opps.length === 1 ? "" : "s") + " for \"" + theme + "\"");
+        var opps = await apiCall(apiKey.trim(), theme, types, today);
+        opps.forEach(function(o) { o._theme = theme; });
+        all = all.concat(opps);
+        addLog("  -> " + opps.length + " result(s)");
       } catch(err) {
-        addLog("  → Error for \"" + theme + "\": " + err.message);
+        addLog("  -> Error: " + err.message);
         if (!error) setError(err.message);
       }
-      setProgress(Math.round(((i + 1) / total) * 100));
-      setResults(Object.assign({}, allResults));
+      setProgress(Math.round(((i+1) / themes.length) * 100));
+      setResults(all.slice());
     }
-
-    addLog("Done.");
+    addLog("Done. " + all.length + " total.");
     setRunning(false);
   }
 
   function exportCSV() {
-    if (!results) return;
-    var cols = ["theme","title","company","platform","type","techArea","description","url","deadline","date","activeStatus"];
-    var rows = [];
-    Object.keys(results).forEach(function(theme) {
-      (results[theme] || []).forEach(function(r) {
-        var row = cols.map(function(k) {
-          var val = k === "theme" ? theme : (r[k] || "");
-          return '"' + val.toString().replace(/"/g, '""') + '"';
-        });
-        rows.push(row.join(","));
-      });
+    if (!results || !results.length) return;
+    var cols = ["_theme","relevance","type","title","organisation","source","techArea","description","deadline","datePosted","activeStatus","url"];
+    var head = ["theme","relevance","type","title","organisation","source","techArea","description","deadline","datePosted","activeStatus","url"];
+    var rows = results.map(function(r) {
+      return cols.map(function(c) { return '"' + (r[c]==null?"":r[c]).toString().replace(/"/g,'""') + '"'; }).join(",");
     });
-    if (!rows.length) return;
-    var csv = [cols.join(",")].concat(rows).join("\n");
-    var a = document.createElement("a");
-    a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
-    a.download = "industry-asks.csv";
-    a.click();
+    var csv = [head.join(",")].concat(rows).join("\n");
+    var a2 = document.createElement("a");
+    a2.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+    a2.download = "partnering-opportunities.csv"; a2.click();
   }
-
-  function bClass(r) { return BADGE_CLASS[(r.type||"").toLowerCase()] || "b-other"; }
-  function bLabel(r) { return BADGE_LABEL[(r.type||"").toLowerCase()] || "Other"; }
-  function sClass(r) { return STATUS_CLASS[(r.activeStatus||"").toLowerCase()] || "b-unknown"; }
-
-  var totalFound = results ? Object.values(results).reduce(function(s, a) { return s + a.length; }, 0) : 0;
-  var hasAny     = totalFound > 0;
 
   var e = React.createElement;
 
+  var shown = (results || []).filter(function(r) { return filterType === "all" || r.type === filterType; });
+  shown = shown.slice().sort(function(x, y) { return (y.relevance||0) - (x.relevance||0); });
+
+  function scoreClass(n) { return "s" + (n || 1); }
+
   return e("div", null,
     e("header", null,
-      e("h1", null, "Industry Ask Scout"),
-      e("p",  null, "Finds active technology needs and research requests posted by industry — one focused search per theme.")
+      e("h1", null, "Industry Partnering Scout"),
+      e("p", null, "Finds open, verifiable industry partnering opportunities — sponsored research, licensing, collaborative R&D and tenders — scored by relevance.")
     ),
     e("div", { className: "layout" },
 
       e("div", { className: "panel" },
         e("div", null,
           e("div", { className: "slabel" }, "OpenAI API key"),
-          e("input", { className: "api-input", type: "password", value: apiKey,
-            onChange: function(ev) { setApiKey(ev.target.value); },
-            placeholder: "sk-...", autoComplete: "off" }),
-          e("div", { className: "api-note" },
-            "Get a key at ", e("a", { href: "https://platform.openai.com/api-keys", target: "_blank", rel: "noopener" }, "platform.openai.com"), ". Not stored.")
+          e("input", { className: "api-input", type: "password", value: apiKey, onChange: function(ev){ setApiKey(ev.target.value); }, placeholder: "sk-...", autoComplete: "off" }),
+          e("div", { className: "api-note" }, "Get a key at ", e("a", { href: "https://platform.openai.com/api-keys", target: "_blank", rel: "noopener" }, "platform.openai.com"), ". Not stored.")
         ),
 
         e("div", { className: "divider" }),
@@ -310,110 +268,89 @@ function App() {
           e("div", { className: "slabel" }, "Research themes"),
           e("div", { style: { marginBottom: 8 } },
             themes.map(function(t) {
-              return e("span", { key: t, className: "tag" },
-                t,
-                e("button", { onClick: function() { setThemes(function(p) { return p.filter(function(x) { return x !== t; }); }); }, title: "Remove" }, "×")
-              );
+              return e("span", { key: t, className: "tag" }, t,
+                e("button", { onClick: function(){ setThemes(function(p){ return p.filter(function(x){ return x!==t; }); }); }, title: "Remove" }, "×"));
             })
           ),
           e("div", { className: "add-row" },
-            e("input", { value: newTheme, onChange: function(ev) { setNewTheme(ev.target.value); },
-              onKeyDown: function(ev) { if (ev.key === "Enter") addTheme(); }, placeholder: "Add theme…" }),
+            e("input", { value: newTheme, onChange: function(ev){ setNewTheme(ev.target.value); }, onKeyDown: function(ev){ if (ev.key==="Enter") addTheme(); }, placeholder: "Add theme…" }),
             e("button", { onClick: addTheme }, "+")
-          ),
-          e("div", { style: { fontSize: 11, color: "#aaa", marginTop: 6 } },
-            "One API call per theme — more themes = longer search but better coverage."
           )
         ),
 
         e("div", { className: "divider" }),
 
         e("div", null,
-          e("div", { className: "slabel" }, "Platforms"),
-          PLATFORM_GROUPS.map(function(g) {
-            return e("div", { key: g.group },
-              e("div", { className: "grp-label" }, g.group),
-              g.platforms.map(function(p) {
-                return e("label", { key: p.id, className: "plat" },
-                  e("input", { type: "checkbox", checked: selPlats.includes(p.id), onChange: function() { togglePlat(p.id); } }),
-                  p.label
-                );
-              })
+          e("div", { className: "slabel" }, "Opportunity types"),
+          OPP_TYPES.map(function(t) {
+            return e("label", { key: t.id, className: "type-row" },
+              e("input", { type: "checkbox", checked: selTypes.indexOf(t.id) > -1, onChange: function(){ toggleType(t.id); } }),
+              e("span", null, t.label, e("span", { className: "sub" }, t.desc))
             );
           })
         ),
 
         e("div", { className: "divider" }),
 
-        e("button", { className: "run-btn", onClick: runSearch,
-          disabled: running || !apiKey.trim() || themes.length === 0 || selPlats.length === 0 },
-          running ? e(React.Fragment, null, e("span", { className: "spin" }, "↻"), " Searching…") : "🔍 Find active asks"
+        e("button", { className: "run-btn", onClick: runSearch, disabled: running || !apiKey.trim() || themes.length===0 || selTypes.length===0 },
+          running ? e(React.Fragment, null, e("span", { className: "spin" }, "↻"), " Searching…") : "🔍 Find opportunities"
         ),
+        e("div", { style: { fontSize: 11, color: "#aaa" } }, "One search per theme. More themes = longer run, better coverage."),
 
-        hasAny && e("button", { className: "exp-btn", onClick: exportCSV }, "↓ Export CSV")
+        results && results.length > 0 && e("button", { className: "exp-btn", onClick: exportCSV }, "↓ Export CSV")
       ),
 
       e("div", { className: "results" },
 
         log.length > 0 && e("div", { className: "log-box" },
-          e("button", { className: "log-toggle", onClick: function() { setShowLog(function(p) { return !p; }); } },
-            (showLog ? "▾" : "▸") + " Search log"
-          ),
-          running && e("div", null,
-            e("div", { className: "progress" },
-              e("div", { className: "progress-bar", style: { width: progress + "%" } })
-            )
-          ),
+          e("button", { className: "log-toggle", onClick: function(){ setShowLog(function(p){ return !p; }); } }, (showLog?"▾":"▸") + " Search log"),
+          running && e("div", { className: "progress" }, e("div", { className: "progress-bar", style: { width: progress + "%" } })),
           showLog && e("div", { style: { display: "flex", flexDirection: "column", gap: 2, marginTop: 6 } },
-            log.map(function(l, i) {
-              return e("div", { key: i, className: "log-line" },
-                e("span", { className: "log-t" }, l.t),
-                e("span", { className: "log-m" }, l.msg)
-              );
-            })
+            log.map(function(l, i) { return e("div", { key: i, className: "log-line" }, e("span", { className: "log-t" }, l.t), e("span", { className: "log-m" }, l.msg)); })
           )
         ),
 
         error && e("div", { className: "err-box" }, "⚠ " + error),
 
-        !results && !running && e("div", { className: "empty" },
-          e("div", { className: "icon" }, "🏭"),
-          e("p", null, "Find what industry is looking for."),
-          e("p", { className: "sub" }, "Add your API key, set themes, and run a search.")
+        (!results || results.length === 0) && !running && e("div", { className: "empty" },
+          e("div", { className: "icon" }, "🎯"),
+          e("p", null, results ? "No opportunities passed the quality filter." : "Find specific partnering opportunities."),
+          e("p", { className: "sub" }, results ? "Try broader themes or more opportunity types." : "Set your API key, themes and types, then search.")
         ),
 
-        results && !hasAny && !running && e("div", { className: "empty" },
-          e("p", null, "No results found. Try different themes or platforms.")
-        ),
-
-        results && hasAny && e(React.Fragment, null,
-          e("div", { className: "res-header" }, totalFound + " opportunit" + (totalFound === 1 ? "y" : "ies") + " found"),
-          Object.keys(results).map(function(theme) {
-            var opps = results[theme];
-            if (!opps || !opps.length) return null;
-            return e("div", { key: theme, className: "theme-group" },
-              e("div", { className: "theme-heading" }, theme + " (" + opps.length + ")"),
-              opps.map(function(r, i) {
-                return e("div", { key: i, className: "card" },
-                  e("div", { className: "card-top" },
-                    e("div", { className: "card-badges" },
-                      e("span", { className: "badge " + bClass(r) }, bLabel(r)),
-                      r.activeStatus && e("span", { className: "badge " + sClass(r) }, r.activeStatus)
-                    ),
-                    e("div", { className: "card-dates" },
-                      r.deadline && e("span", { className: "deadline" }, "⏱ " + r.deadline),
-                      r.date      && e("span", { className: "date-lbl" }, r.date)
-                    )
+        results && results.length > 0 && e(React.Fragment, null,
+          e("div", { className: "filterbar" },
+            e("span", { className: "filter-chip" + (filterType==="all"?" active":""), onClick: function(){ setFilterType("all"); } }, "All"),
+            OPP_TYPES.filter(function(t){ return results.some(function(r){ return r.type===t.id; }); }).map(function(t) {
+              return e("span", { key: t.id, className: "filter-chip" + (filterType===t.id?" active":""), onClick: function(){ setFilterType(t.id); } }, t.short);
+            }),
+            e("span", { className: "res-count" }, shown.length + " shown, sorted by relevance")
+          ),
+          shown.map(function(r, i) {
+            return e("div", { key: i, className: "card" },
+              e("div", { className: "card-score" },
+                e("div", { className: "score-num " + scoreClass(r.relevance) }, r.relevance || "–"),
+                e("div", { className: "score-lbl" }, "rel")
+              ),
+              e("div", { className: "card-body" },
+                e("div", { className: "card-top" },
+                  e("div", { className: "card-badges" },
+                    e("span", { className: "badge " + (TYPE_BADGE[r.type]||"t-sponsored") }, TYPE_SHORT[r.type] || r.type || "—"),
+                    r.activeStatus && e("span", { className: "badge " + (r.activeStatus==="confirmed open"?"b-confirmed":"b-assumed") }, r.activeStatus)
                   ),
-                  e("div", { className: "card-title" }, r.title || "Untitled"),
-                  e("div", { className: "card-meta" }, (r.company || "Unknown") + (r.platform ? " · " + r.platform : "")),
-                  r.description && e("div", { className: "card-desc" }, r.description),
-                  e("div", { className: "card-foot" },
-                    r.techArea && e("span", { className: "tech-tag" }, "# " + r.techArea),
-                    r.url && e("a", { href: r.url, target: "_blank", rel: "noopener noreferrer", className: "view-link" }, "View ↗")
+                  e("div", { className: "card-dates" },
+                    r.deadline && e("span", { className: "deadline" }, "⏱ " + r.deadline),
+                    r.datePosted && e("span", { className: "date-lbl" }, r.datePosted)
                   )
-                );
-              })
+                ),
+                e("div", { className: "card-title" }, r.title || "Untitled"),
+                e("div", { className: "card-meta" }, (r.organisation || "Unknown") + (r.source ? " · " + r.source : "") + (r._theme ? " · theme: " + r._theme : "")),
+                r.description && e("div", { className: "card-desc" }, r.description),
+                e("div", { className: "card-foot" },
+                  r.techArea && e("span", { className: "tech-tag" }, "# " + r.techArea),
+                  r.url && e("a", { href: r.url, target: "_blank", rel: "noopener noreferrer", className: "view-link" }, "View opportunity ↗")
+                )
+              )
             );
           })
         )
